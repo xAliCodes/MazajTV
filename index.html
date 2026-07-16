@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>مزاج TV — بث حي، بلمسة جمالية</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="main.css">
+</head>
+<body>
+
+<canvas id="glcanvas"></canvas>
+<canvas id="particles"></canvas>
+<div class="vignette"></div>
+<div class="noise"></div>
+
+<!-- ============ عرض الشبكة ============ -->
+<main class="grid-view relative z-10 min-h-screen px-5 md:px-10 lg:px-14 py-7 md:py-10">
+
+  <header class="flex items-center justify-between mb-10 md:mb-14">
+    <div class="flex items-center gap-3">
+      <div class="logo-tile relative w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-300 via-amber-500 to-orange-600 flex items-center justify-center">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0a0907" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M8 12l3 3 5-6"/>
+        </svg>
+        <div class="absolute -inset-1 rounded-2xl bg-amber-400/15 blur-md -z-10"></div>
+      </div>
+      <div>
+        <div class="text-[10px] text-amber-300/80 font-semibold tracking-[0.25em] uppercase">بث مباشر</div>
+        <div class="font-bold text-lg leading-none tracking-tight text-stone-100">مزاج <span class="gradient-text">TV</span></div>
+      </div>
+    </div>
+    <div class="hidden md:flex items-center gap-3">
+      <div class="status-pill"><span class="live-dot"></span><span>٤ قنوات رياضية</span></div>
+      <div class="status-pill"><span class="eq"><span></span><span></span><span></span><span></span></span><span id="clock">--:--</span></div>
+    </div>
+  </header>
+
+  <section class="mb-12 md:mb-14 max-w-4xl">
+    <div class="inline-flex items-center gap-2 mb-5 status-pill">
+      <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+      <span class="text-stone-300">بث عالي الدقة · بدون تسجيل</span>
+    </div>
+    <h1 class="hero-title font-bold text-5xl md:text-7xl lg:text-[5.5rem] leading-[1.02] mb-5">
+      تلفزيون،<br>
+      <em class="gradient-text">بلمسة جمالية.</em>
+    </h1>
+    <p class="text-stone-400 text-base md:text-lg max-w-xl leading-relaxed">
+      مجموعة مختارة من القنوات الرياضية الحية. اختر قناة لبدء المشاهدة.
+    </p>
+  </section>
+
+  <!-- شبكة القنوات : صورة + عنوان فقط -->
+  <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-7xl" id="channelGrid"></section>
+
+  <footer class="mt-16 pt-7 border-t border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-xs text-stone-500">
+    <div>© 2025 مزاج TV — تجربة بث تجريبية.</div>
+    <div class="flex gap-5 flex-wrap">
+      <span class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-amber-400"></span>دقة 1080p</span>
+      <span class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-amber-400"></span>طوال اليوم</span>
+      <span class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-amber-400"></span>بدون إعلانات</span>
+    </div>
+  </footer>
+</main>
+
+<!-- ============ مشغل الفيديو ============ -->
+<div class="player-overlay" id="playerOverlay" role="dialog" aria-modal="true">
+  <div class="player-container" id="playerContainer">
+    <div class="flex items-center justify-between mb-4 gap-4">
+      <div class="flex items-center gap-4 min-w-0">
+        <button class="icon-btn back-btn" id="backBtn" aria-label="العودة للقنوات">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+        <div class="min-w-0">
+          <div class="flex items-center gap-2.5"><span class="live-dot"></span><span class="text-[10px] uppercase text-red-400 font-semibold">مباشر</span></div>
+          <h2 id="playerTitle" class="text-xl md:text-2xl font-bold mt-1 truncate text-stone-100">اسم القناة</h2>
+        </div>
+      </div>
+    </div>
+    <div class="video-wrapper paused" id="videoWrapper">
+      <video id="videoPlayer" playsinline preload="metadata" autoplay></video>
+      <div class="absolute inset-0 flex items-center justify-center bg-black" id="loadingState"><div class="spinner"></div></div>
+      <button class="absolute inset-0 hidden items-center justify-center bg-black/40" id="bigPlayBtn"><div class="w-20 h-20 rounded-full bg-amber-400/95 text-black flex items-center justify-center shadow-2xl"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div></button>
+      <div class="controls">
+        <div class="progress-bar mb-3.5" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5">
+            <button class="icon-btn" id="playPauseBtn"><svg id="playIcon" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><svg id="pauseIcon" class="hidden" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button>
+            <button class="icon-btn" id="muteBtn"><svg id="volIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></button>
+            <input type="range" min="0" max="1" step="0.01" value="1" id="volumeSlider" class="vol w-16 md:w-24">
+            <span class="text-xs text-stone-400 font-mono ml-1.5 hidden sm:inline" id="timeDisplay">مباشر</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button class="icon-btn" id="pipBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><rect x="12" y="11" width="8" height="6" rx="1" fill="currentColor"/></svg></button>
+            <button class="icon-btn" id="fullscreenBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>
