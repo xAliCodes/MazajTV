@@ -3,10 +3,10 @@
 
   // ============ Channel Data ============
   const channels = [
-    { id: 1, name: 'الرياضية الأولى', video: 'http://10.5.10.190/0.mp4', image: 'assets/images/image1.avif' },
-    { id: 2, name: 'الرياضية الثانية', video: 'http://10.5.10.190/4.mp4', image: 'assets/images/image2.webp' },
-    { id: 3, name: 'الرياضية الثالثة', video: 'http://10.5.10.190/8.mp4', image: 'assets/images/image3.jpg' },
-    { id: 4, name: 'الرياضية الرابعة', video: 'http://10.5.10.190/12.mp4', image: 'assets/images/image4.webp' }
+    { id: 1, name: 'الرياضية الأولى', video: 'https://encoder.al-fiker.com/0.mp4', image: 'assets/images/image1.avif' },
+    { id: 2, name: 'الرياضية الثانية', video: 'https://encoder.al-fiker.com/4.mp4', image: 'assets/images/image2.webp' },
+    { id: 3, name: 'الرياضية الثالثة', video: 'https://encoder.al-fiker.com/8.mp4', image: 'assets/images/image3.jpg' },
+    { id: 4, name: 'الرياضية الرابعة', video: 'https://encoder.al-fiker.com/12.mp4', image: 'assets/images/image4.webp' }
   ];
 
   // ============ DOM Elements ============
